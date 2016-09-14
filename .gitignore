@@ -1,0 +1,4 @@
+*.pyc
+gui.log
+
+__pycache__/*
