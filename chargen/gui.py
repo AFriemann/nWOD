@@ -11,30 +11,40 @@
 from . import __version__
 
 from .model.character import Character, Virtues, Vices
-from .curses import Form, EmptyLine, Link, Button, App, EntryField, ComboBoxField, HeadLine
-
-class CharacterDetails(Form):
-    def create(self):
-
-        self.addReturnButton()
+from .curses import Form, EmptyLine, Link, Button, App, EntryField, ComboBoxField, HeadLine, PipField
 
 class CharacterAttributes(Form):
     def create(self):
         self.addHeadline('Mental')
 
-        self.c_intelligence = self.addField('Intelligence')
-        self.c_wits = self.addField('Wits')
-        self.c_resolve = self.addField('Resolve')
+        self.c_intelligence = self.addField('Intelligence', PipField)
+        self.c_wits = self.addField('Wits', PipField)
+        self.c_resolve = self.addField('Resolve', PipField)
 
+        self.add(EmptyLine)
         self.addHeadline('Physical')
+
+        self.c_strength = self.addField('Strength', PipField)
+        self.c_dexterity = self.addField('Dexterity', PipField)
+        self.c_stamina = self.addField('Resolve', PipField)
+
+        self.add(EmptyLine)
         self.addHeadline('Social')
+
+        self.c_presence = self.addField('Presence', PipField)
+        self.c_manipulation = self.addField('Manipulation', PipField)
+        self.c_composure = self.addField('Composure', PipField)
 
         self.addReturnButton()
 
 class CharacterSkills(Form):
     def create(self):
         self.addHeadline('Mental')
+
+        self.add(EmptyLine)
         self.addHeadline('Physical')
+
+        self.add(EmptyLine)
         self.addHeadline('Social')
 
         self.addReturnButton()
@@ -42,22 +52,24 @@ class CharacterSkills(Form):
 class CharacterMeritsAndFlaws(Form):
     def create(self):
         self.addHeadline('Merits')
+
+        self.add(EmptyLine)
         self.addHeadline('Flaws')
 
         self.addReturnButton()
 
 class MainContext(Form):
     def create(self):
-        self.addHeadline('Details')
-
         self.c_name = self.addField('Name')
         self.c_age = self.addField('Age')
         self.c_virtue = self.addField('Virtue', ComboBoxField, values=Virtues)
         self.c_vice = self.addField('Vice', ComboBoxField, values=Vices)
 
-        self.c_attributes = self.addField('Attributes', kind=Link, indent=0, target='ATTRIBUTES')
-        self.c_skills = self.addField('Skills', kind=Link, indent=0, target='SKILLS')
-        self.c_merits_and_flaws = self.addField('Merits & Flaws', kind=Link, indent=0, target='MERITSANDFLAWS')
+        self.add(EmptyLine)
+
+        self.addLink('Attributes', 'ATTRIBUTES')
+        self.addLink('Skills', 'SKILLS')
+        self.addLink('Merits & Flaws', 'MERITSANDFLAWS')
 
         self.addReturnButton('Save & Exit', self.saveAndExit)
 

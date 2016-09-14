@@ -32,9 +32,13 @@ def log_function(obj):
 
 class Link(npyscreen.ButtonPress):
     def __init__(self, *args, **kwargs):
+        kwargs.update({
+            'name': '%s ->' % kwargs.get('name'),
+            'color': 'WHITE_BLACK',
+            'relx': 0,
+        })
         super(Link, self).__init__(*args, **kwargs)
         self.log = log_function(self)
-
         self.target = kwargs.get('target')
 
     def whenPressed(self):
@@ -51,13 +55,12 @@ class Button(npyscreen.ButtonPress):
 
 class EmptyLine(npyscreen.FixedText):
     def __init__(self, *args, **kwargs):
-        super(EmptyLine, self).__init__(*args, editable=False, **kwargs)
-        self.value = '\n'
+        super(EmptyLine, self).__init__(*args, value='\n', editable=False, **kwargs)
 
 class HeadLine(npyscreen.FixedText):
     def __init__(self, *args, **kwargs):
+        kwargs.update({'relx': 5})
         super(HeadLine, self).__init__(*args, editable=False, **kwargs)
-        #self.value = '-------%s-------' % self.value
 
 class EntryField(npyscreen.TitleText):
     pass
@@ -65,7 +68,17 @@ class EntryField(npyscreen.TitleText):
 class ComboBoxField(npyscreen.TitleCombo):
     pass
 
+class PipField(npyscreen.TitleSlider):
+    def __init__(self, *args, **kwargs):
+        super(PipField, self).__init__(
+            *args,
+            out_of=5, field_width=25,
+            **kwargs)
+
 class Form(npyscreen.FormBaseNew):
+    default_indent = 2
+    indent_step = 3
+
     def __init__(self, *args, **kwargs):
         super(Form, self).__init__(*args, **kwargs)
         self.log = log_function(self)
@@ -82,15 +95,18 @@ class Form(npyscreen.FormBaseNew):
         self.add(Button, name=name, function=function)
 
     def addHeadline(self, name):
-        self.add(EmptyLine)
         self.add(HeadLine, value=name)
         self.add(EmptyLine)
 
-    def addField(self, name, kind = EntryField, indent=1, **kwargs):
-        default_indent = 2
-
+    def addLink(self, name, target, indent=0, **kwargs):
         if indent > 0:
-            kwargs.update({'relx': default_indent + (indent * 5)})
+            kwargs.update({'relx': self.default_indent + (indent * self.indent_step)})
+
+        return self.add(Link, name=name, target=target, **kwargs)
+
+    def addField(self, name, kind = EntryField, indent=0, **kwargs):
+        if indent > 0:
+            kwargs.update({'relx': self.default_indent + (indent * self.indent_step)})
 
         return self.add(kind, name=name, **kwargs)
 
