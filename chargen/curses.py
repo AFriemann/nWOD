@@ -14,6 +14,23 @@ LOGFILE = 'gui.log'
 
 logfd = open(LOGFILE, 'w')
 
+class Logger(object):
+    def __init__(self, obj):
+        if type(obj) is str:
+            self.name = obj
+        else:
+            self.name = obj.__class__.__name__
+
+    def write(self, msg):
+        logfd.write('[%s.%s] %s\n' % (__name__, self.name, msg))
+        logfd.flush()
+
+    def __enter__(self, *args, **kwargs):
+        return self.write
+
+    def __exit__(self, *args, **kwargs):
+        pass
+
 def close_log():
     logfd.flush()
     logfd.close()
@@ -23,13 +40,6 @@ def print_log():
         content = stream.read().decode()
     print(content)
 
-def log_function(obj):
-    clsname = obj.__class__.__name__
-    def log(msg):
-        logfd.write('[%s.%s] %s\n' % (__name__, clsname, msg))
-        logfd.flush()
-    return log
-
 class Link(npyscreen.ButtonPress):
     def __init__(self, *args, **kwargs):
         kwargs.update({
@@ -38,7 +48,6 @@ class Link(npyscreen.ButtonPress):
             'relx': 0,
         })
         super(Link, self).__init__(*args, **kwargs)
-        self.log = log_function(self)
         self.target = kwargs.get('target')
 
     def whenPressed(self):
@@ -65,8 +74,18 @@ class HeadLine(npyscreen.FixedText):
 class EntryField(npyscreen.TitleText):
     pass
 
+class IntField(npyscreen.TitleText):
+    def __init__(self, *args, **kwargs):
+        kwargs['value'] = str(kwargs.get('value', 0))
+        super(IntField, self).__init__(*args, **kwargs)
+
+    def get_value(self):
+        return int(super(IntField, self).get_value())
+
 class ComboBoxField(npyscreen.TitleCombo):
-    pass
+    def get_value(self):
+        index = super(ComboBoxField, self).get_value()
+        if index: return self.values[index]
 
 class PipField(npyscreen.TitleSlider):
     def __init__(self, *args, **kwargs):
@@ -75,13 +94,21 @@ class PipField(npyscreen.TitleSlider):
             out_of=5, field_width=25,
             **kwargs)
 
+    def get_value(self):
+        return int(super(PipField, self).get_value())
+
+class FilenameField(npyscreen.TitleFilename):
+    pass
+
+class Popup(npyscreen.Popup):
+    pass
+
+class ActionPopup(npyscreen.ActionPopup):
+    pass
+
 class Form(npyscreen.FormBaseNew):
     default_indent = 2
     indent_step = 3
-
-    def __init__(self, *args, **kwargs):
-        super(Form, self).__init__(*args, **kwargs)
-        self.log = log_function(self)
 
     def returnFunction(self):
         self.parentApp.switchFormPrevious()
@@ -114,12 +141,9 @@ class Form(npyscreen.FormBaseNew):
         self.addReturnButton()
 
 class App(npyscreen.NPSAppManaged):
-    def __init__(self):
-        super(App, self).__init__()
-        self.log = log_function(self)
-
     def onCleanExit(self):
-        self.log('exiting')
+        with Logger(self) as log:
+            log('exiting')
         close_log()
 
     def print_log(self):

@@ -20,23 +20,23 @@ class AttributeCategory(Model):
         return cls()
 
 class MentalAttributes(AttributeCategory):
-    Intelligence = Attribute(pip, fallback=1)
-    Resolve = Attribute(pip, fallback=1)
-    Wits = Attribute(pip, fallback=1)
+    intelligence = Attribute(pip, fallback=1)
+    resolve = Attribute(pip, fallback=1)
+    wits = Attribute(pip, fallback=1)
 
 class PhysicalAttributes(AttributeCategory):
-    Dexterity = Attribute(pip, fallback=1)
-    Stamina = Attribute(pip, fallback=1)
-    Strength = Attribute(pip, fallback=1)
+    dexterity = Attribute(pip, fallback=1)
+    stamina = Attribute(pip, fallback=1)
+    strength = Attribute(pip, fallback=1)
 
 class SocialAttributes(AttributeCategory):
-    Composure = Attribute(pip, fallback=1)
-    Manipulation = Attribute(pip, fallback=1)
-    Presence = Attribute(pip, fallback=1)
+    composure = Attribute(pip, fallback=1)
+    manipulation = Attribute(pip, fallback=1)
+    presence = Attribute(pip, fallback=1)
 
 class Attributes(Model):
-    Mental = Attribute(MentalAttributes, fallback={})
-    Physical = Attribute(PhysicalAttributes, fallback={})
-    Social = Attribute(SocialAttributes, fallback={})
+    mental = Attribute(MentalAttributes, fallback={})
+    physical = Attribute(PhysicalAttributes, fallback={})
+    social = Attribute(SocialAttributes, fallback={})
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8

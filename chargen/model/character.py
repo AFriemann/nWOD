@@ -17,13 +17,13 @@ Virtues = [ 'Charity', 'Faith', 'Fortitude', 'Hope', 'Justice', 'Prudence', 'Tem
 Vices   = [ 'Envy', 'Gluttony', 'Greed', 'Lust', 'Pride', 'Sloth', 'Wrath' ]
 
 class Character(Model):
-    Name = Attribute(str)
-    Age  = Attribute(int)
+    name = Attribute(str)
+    age  = Attribute(int)
 
-    Virtue = Attribute(str)
-    Vice = Attribute(str)
+    virtue = Attribute(str)
+    vice = Attribute(str)
 
-    Attributes = Attribute(Attributes, fallback={})
-    Skills = Attribute(Skills, fallback={})
+    attributes = Attribute(Attributes, fallback={})
+    skills = Attribute(Skills, fallback={})
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
