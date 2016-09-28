@@ -10,7 +10,7 @@
 
 import npyscreen
 
-from chargen.gui.logger import Logger
+from chargen.gui.curses.logger import Logger
 
 class App(npyscreen.NPSAppManaged):
     def onCleanExit(self):

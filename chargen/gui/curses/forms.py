@@ -10,7 +10,7 @@
 
 import npyscreen
 
-from chargen.gui.logger import Logger
+from chargen.gui.curses.logger import Logger
 
 from chargen.gui.curses.elements import *
 
@@ -73,6 +73,17 @@ class Form(npyscreen.FormBaseNewWithMenus):
 
     def get_field_groups(self):
         return [ (k.replace('group_', ''), v) for k,v in vars(self).items() if k.startswith('group_') ]
+
+    def get_items(self):
+        items = {}
+
+        for field,proxy in self.get_fields():
+            items[field] = proxy.get_value()
+
+        for group,fields in self.get_field_groups():
+            items[group] = { name: proxy.get_value() for name,proxy in fields.items() }
+
+        return items
 
     def set_fields(self, **kwargs):
         for name, proxy in self.get_fields():

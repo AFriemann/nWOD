@@ -8,6 +8,8 @@
 
 """
 
+from chargen.gui.curses.logger import Logger
+
 from chargen.gui.curses.app import App
 from chargen.gui.curses.forms import *
 from chargen.gui.curses.elements import *

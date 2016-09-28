@@ -18,19 +18,7 @@ from chargen.gui.curses import App, Logger
 from chargen.gui.curses import Form, ActionPopup
 from chargen.gui.curses import Link, Button, EntryField, ComboBoxField, HeadLine, PipField, IntField, FilenameField
 
-class CharForm(Form):
-    def get_char_items(self):
-        items = {}
-
-        for field,proxy in self.get_fields():
-            items[field] = proxy.get_value()
-
-        for group,fields in self.get_field_groups():
-            items[group] = { name: proxy.get_value() for name,proxy in fields.items() }
-
-        return items
-
-class CharacterAttributes(CharForm):
+class CharacterAttributes(Form):
     def create(self):
         self.addFieldGroup(name='Mental',
             intelligence = { 'name': 'Intelligence', 'kind': PipField, 'lowest': 1 },
@@ -54,7 +42,7 @@ class CharacterAttributes(CharForm):
 
         self.addReturnButton()
 
-class CharacterSkills(CharForm):
+class CharacterSkills(Form):
     def create(self):
         self.addFieldGroup('Mental',
             academics     = { 'name': 'Academics', 'kind': PipField },
@@ -93,7 +81,7 @@ class CharacterSkills(CharForm):
 
         self.addReturnButton()
 
-class CharacterMeritsAndFlaws(CharForm):
+class CharacterMeritsAndFlaws(Form):
     def create(self):
         self.addHeadline('Merits')
 
@@ -102,7 +90,7 @@ class CharacterMeritsAndFlaws(CharForm):
 
         self.addReturnButton()
 
-class MainContext(CharForm):
+class MainContext(Form):
     def create(self):
         self.load_menu = self.add_menu(name='File', shortcut="^F")
         self.load_menu.addItem(text='Save', onSelect=self.save, shortcut="^S")
@@ -215,10 +203,10 @@ class CharacterGenerator(App):
         form.set_field_groups(**kwargs)
 
     def __iter__(self):
-        yield 'details', self.details.get_char_items()
-        yield 'attributes', self.attributes.get_char_items()
-        yield 'skills', self.skills.get_char_items()
-        yield 'merits & flaws', self.merits_and_flaws.get_char_items()
+        yield 'details', self.details.get_items()
+        yield 'attributes', self.attributes.get_items()
+        yield 'skills', self.skills.get_items()
+        yield 'merits & flaws', self.merits_and_flaws.get_items()
 
 def run():
     logger = logging.getLogger(__name__)
