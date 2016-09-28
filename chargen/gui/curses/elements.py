@@ -10,35 +10,7 @@
 
 import npyscreen
 
-LOGFILE = 'gui.log'
-
-logfd = open(LOGFILE, 'w')
-
-class Logger(object):
-    def __init__(self, obj):
-        if type(obj) is str:
-            self.name = obj
-        else:
-            self.name = obj.__class__.__name__
-
-    def write(self, msg):
-        logfd.write('[%s.%s] %s\n' % (__name__, self.name, msg))
-        logfd.flush()
-
-    def __enter__(self, *args, **kwargs):
-        return self.write
-
-    def __exit__(self, *args, **kwargs):
-        pass
-
-def close_log():
-    logfd.flush()
-    logfd.close()
-
-def print_log():
-    with open(LOGFILE, 'rb') as stream:
-        content = stream.read().decode()
-    print(content)
+from chargen.gui.logger import Logger
 
 class Link(npyscreen.ButtonPress):
     def __init__(self, *args, **kwargs):
@@ -82,6 +54,9 @@ class IntField(npyscreen.TitleText):
     def get_value(self):
         return int(super(IntField, self).get_value())
 
+    def set_value(self, value):
+        super(IntField, self).set_value(str(value))
+
 class ComboBoxField(npyscreen.TitleCombo):
     def get_value(self):
         index = super(ComboBoxField, self).get_value()
@@ -89,6 +64,8 @@ class ComboBoxField(npyscreen.TitleCombo):
 
 class PipField(npyscreen.TitleSlider):
     def __init__(self, *args, **kwargs):
+        if 'lowest' not in kwargs: kwargs['lowest'] = 0
+        if 'value' not in kwargs: kwargs['value'] = kwargs['lowest']
         super(PipField, self).__init__(
             *args,
             out_of=5, field_width=25,
@@ -105,48 +82,5 @@ class Popup(npyscreen.Popup):
 
 class ActionPopup(npyscreen.ActionPopup):
     pass
-
-class Form(npyscreen.FormBaseNew):
-    default_indent = 2
-    indent_step = 3
-
-    def returnFunction(self):
-        self.parentApp.switchFormPrevious()
-
-    def addReturnButton(self, name = 'Return', function = None):
-        if function is None:
-            function = lambda: self.parentApp.switchFormPrevious()
-
-        self.add(EmptyLine)
-        self.add(EmptyLine)
-        self.add(Button, name=name, function=function)
-
-    def addHeadline(self, name):
-        self.add(HeadLine, value=name)
-        self.add(EmptyLine)
-
-    def addLink(self, name, target, indent=0, **kwargs):
-        if indent > 0:
-            kwargs.update({'relx': self.default_indent + (indent * self.indent_step)})
-
-        return self.add(Link, name=name, target=target, **kwargs)
-
-    def addField(self, name, kind = EntryField, indent=0, **kwargs):
-        if indent > 0:
-            kwargs.update({'relx': self.default_indent + (indent * self.indent_step)})
-
-        return self.add(kind, name=name, **kwargs)
-
-    def create(self):
-        self.addReturnButton()
-
-class App(npyscreen.NPSAppManaged):
-    def onCleanExit(self):
-        with Logger(self) as log:
-            log('exiting')
-        close_log()
-
-    def print_log(self):
-        print_log()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8

@@ -1,4 +1,3 @@
-#! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 .. module:: TODO
@@ -9,15 +8,8 @@
 
 """
 
-# import logging
-# logging.basicConfig(level=logging.DEBUG)
-
-from chargen.gui import run
-
-if __name__ == '__main__':
-    try:
-        exit(run())
-    except KeyboardInterrupt:
-        exit(137)
+from chargen.gui.curses.app import App
+from chargen.gui.curses.forms import *
+from chargen.gui.curses.elements import *
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
