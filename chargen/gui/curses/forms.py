@@ -14,7 +14,7 @@ from chargen.gui.curses.logger import Logger
 
 from chargen.gui.curses.elements import *
 
-class Form(npyscreen.FormBaseNewWithMenus):
+class FormBase():
     default_indent = 2
     indent_step = 3
 
@@ -36,9 +36,12 @@ class Form(npyscreen.FormBaseNewWithMenus):
         self.add(HeadLine, value=name)
         self.add(EmptyLine)
 
+    def addText(self, value, editable=False):
+        self.add(TextField, value=value)
+
     def addLink(self, name, target, indent=0, **kwargs):
         if indent > 0:
-            kwargs.update({'relx': self.default_indent + (indent * self.indent_step)})
+            kwargs.update(relx = self.default_indent + (indent * self.indent_step))
 
         return self.add(Link, name=name, target=target, **kwargs)
 
@@ -47,14 +50,22 @@ class Form(npyscreen.FormBaseNewWithMenus):
 
     def addField(self, name, kind = EntryField, indent=0, **kwargs):
         if indent > 0:
-            kwargs.update({'relx': self.default_indent + (indent * self.indent_step)})
+            kwargs.update(relx = self.default_indent + (indent * self.indent_step))
 
         return self.add(kind, name=name, **kwargs)
 
     def addFieldGroup(self, name, **kwargs):
-        self.addHeadline(name)
+        headline = kwargs.pop('_headline') if '_headline' in kwargs else {'kind': HeadLine, 'value': name}
+        headline.update(
+            color = 'WHITE_BLACK',
+        )
 
-        group = { k: self.addField(**v) for k,v in kwargs.items() }
+        self.__setattr__('grouphl_%s' % name.lower(), self.add(headline.pop('kind'), name=name, **headline))
+        self.addEmptyLine()
+
+        callback = kwargs.pop('_callback') if '_callback' in kwargs else None
+
+        group = { k: self.addField(value_changed_callback=callback, **v) for k,v in kwargs.items() }
         self.__setattr__('group_%s' % name.lower(), group)
 
         return group
@@ -65,6 +76,9 @@ class Form(npyscreen.FormBaseNewWithMenus):
     def get_group(self, name):
         return vars(self)['group_%s' % name]
 
+    def get_group_headline(self, name):
+        return vars(self)['grouphl_%s' % name]
+
     def get_field(self, name):
         return vars(self)['field_%s' % name]
 
@@ -74,7 +88,7 @@ class Form(npyscreen.FormBaseNewWithMenus):
     def get_field_groups(self):
         return [ (k.replace('group_', ''), v) for k,v in vars(self).items() if k.startswith('group_') ]
 
-    def get_items(self):
+    def get_values(self):
         items = {}
 
         for field,proxy in self.get_fields():
@@ -97,5 +111,11 @@ class Form(npyscreen.FormBaseNewWithMenus):
                 for field, proxy in proxies.items():
                     if field in values:
                         proxy.set_value(values.get(field))
+
+class SimpleForm(FormBase, npyscreen.FormBaseNew):
+    pass
+
+class FormWithMenus(FormBase, npyscreen.FormBaseNewWithMenus):
+    pass
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8

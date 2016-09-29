@@ -14,11 +14,11 @@ from chargen.gui.curses.logger import Logger
 
 class Link(npyscreen.ButtonPress):
     def __init__(self, *args, **kwargs):
-        kwargs.update({
-            'name': '%s ->' % kwargs.get('name'),
-            'color': 'WHITE_BLACK',
-            'relx': 0,
-        })
+        kwargs.update(
+            name  = '%s ->' % kwargs.get('name'),
+            color = 'WHITE_BLACK',
+            relx  = 0,
+        )
         super(Link, self).__init__(*args, **kwargs)
         self.target = kwargs.get('target')
 
@@ -40,10 +40,13 @@ class EmptyLine(npyscreen.FixedText):
 
 class HeadLine(npyscreen.FixedText):
     def __init__(self, *args, **kwargs):
-        kwargs.update({'relx': 5})
+        kwargs.update(relx = 5)
         super(HeadLine, self).__init__(*args, editable=False, **kwargs)
 
 class EntryField(npyscreen.TitleText):
+    pass
+
+class TextField(npyscreen.FixedText):
     pass
 
 class IntField(npyscreen.TitleText):
